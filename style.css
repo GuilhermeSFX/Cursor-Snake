@@ -1,3 +1,10 @@
 body{
     color:blue;
 }
+button{
+    background-color:blue;
+    color: white;
+    padding:10px 20px;
+    border:nome;
+    cursor: pointer;
+}
