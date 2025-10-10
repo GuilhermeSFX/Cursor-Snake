@@ -1,19 +1,26 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursor Snake</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<h1>This is reading</h1>
-<p>Parágrafo</p>
-<p id="demo">texto.</p>
+  <div id="ui-panel">
+    <h1>🐍 Cursor Snake</h1>
+    <p><strong>Pontos:</strong> <span id="score">0</span></p>
+    <p><strong>Status:</strong> <span id="status">Jogando...</span></p>
+    <button id="restart">🔄 Reiniciar</button>
+  </div>
 
+  <div id="game-container">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+  </div>
 
-<button type="button" onclick='document.getElementById("demo").innerHTML = "ola mundo!"'>Click Me!</button>
+  <audio id="eatSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+  <audio id="deathSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 
-<p> Oi </p>
-<SCript>
-    document.getElementById("demo").innerHTML = "ola mundo!";
-</SCript>
+  <script src="script.js"></script>
 </body>
 </html>
