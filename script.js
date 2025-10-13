@@ -167,7 +167,7 @@ function draw(){
   });
 
   // Cobrinha
-  ctx.fillStyle = "#00FF00";
+  ctx.fillStyle = "#00ff00f3";
   snake.forEach(seg=>{
     ctx.fillRect(seg.x-segmentSize/2, seg.y-segmentSize/2, segmentSize, segmentSize);
   });
