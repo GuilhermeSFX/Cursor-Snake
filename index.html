@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cursor Snake</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursor Snake 2D</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="ui-panel">
-    <h1>🐍 Cursor Snake</h1>
-    <p><strong>Pontos:</strong> <span id="score">0</span></p>
-    <p><strong>Status:</strong> <span id="status">Jogando...</span></p>
-    <button id="restart">🔄 Reiniciar</button>
+
+<!-- Tela Inicial -->
+<div id="start-screen" class="screen active">
+  <h1>Cursor Snake 2D</h1>
+  <button id="btn-start">Iniciar Jogo</button>
+</div>
+
+<!-- Tela do Jogo -->
+<div id="game-screen" class="screen">
+  <div class="sidebar">
+    <h2>Pontos: <span id="score">0</span></h2>
+    <button id="btn-restart">Reiniciar</button>
   </div>
+  <canvas id="gameCanvas" width="600" height="600"></canvas>
+</div>
 
-  <div id="game-container">
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
-  </div>
-
-  <audio id="eatSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
-  <audio id="deathSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,140 +1,181 @@
+// --- Telas ---
+const startScreen = document.getElementById('start-screen');
+const gameScreen = document.getElementById('game-screen');
+const btnStart = document.getElementById('btn-start');
+const btnRestart = document.getElementById('btn-restart');
+const scoreElement = document.getElementById('score');
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const scoreElement = document.getElementById('score');
-const magnetButton = document.getElementById('magnet-btn');
+const width = canvas.width;
+const height = canvas.height;
 
-const gridSize = 15;
-const cellSize = canvas.width / gridSize;
-
-let snake = [{ x: 7, y: 7 }];
-let score = 0;
-let mousePos = { x: 7, y: 7 };
+// --- Variáveis do Jogo ---
+let snake = [];
+let snakeLength = 5;
+let snakeSpeed = 3;
+let mousePos = {x: width/2, y: height/2};
 let apples = [];
 let obstacles = [];
-let magnetActive = false;
+let score = 0;
+let gameInterval;
 
-// Gera posições aleatórias
-function randomPos() {
-  return {
-    x: Math.floor(Math.random() * gridSize),
-    y: Math.floor(Math.random() * gridSize)
-  };
-}
+// --- Configurações da cobrinha ---
+const baseSegmentSize = 12;
+let segmentSize = baseSegmentSize;
 
-// Inicializa maçãs e obstáculos
-function initGame() {
-  apples = Array.from({ length: 3 }, randomPos);
-  obstacles = Array.from({ length: 5 }, randomPos);
-}
-initGame();
+// --- Inicializar ---
+btnStart.addEventListener('click', () => {
+  startScreen.classList.remove('active');
+  gameScreen.classList.add('active');
+  initGame();
+});
 
-// Atualiza posição do mouse
-canvas.addEventListener('mousemove', (e) => {
+btnRestart.addEventListener('click', () => {
+  initGame();
+});
+
+// --- Mouse ---
+canvas.addEventListener('mousemove', e => {
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  mousePos = {
-    x: Math.floor(x / cellSize),
-    y: Math.floor(y / cellSize)
-  };
+  mousePos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
 });
 
-// Muda obstáculos a cada 15s
-setInterval(() => {
-  obstacles = Array.from({ length: 5 }, randomPos);
-}, 15000);
+// --- Funções auxiliares ---
+function randomPos(minDistFromHead = 30) {
+  let pos;
+  let safe = false;
+  while(!safe){
+    pos = {x: Math.random()*width, y: Math.random()*height};
+    if(snake.length===0){ safe=true; break; }
+    let d = Math.hypot(snake[0].x - pos.x, snake[0].y - pos.y);
+    if(d >= minDistFromHead) safe = true;
+  }
+  return pos;
+}
 
-// Ativa ímã (dura 5 segundos)
-magnetButton.addEventListener('click', () => {
-  if (magnetActive) return;
-  magnetActive = true;
-  magnetButton.disabled = true;
-  setTimeout(() => {
-    magnetActive = false;
-    magnetButton.disabled = false;
-  }, 5000);
-});
+function spawnApples() {
+  while(apples.length < 3){
+    apples.push({...randomPos(), size:10});
+  }
+}
 
-// Atualiza jogo
-function update() {
-  const head = snake[0];
+function spawnObstacles(){
+  obstacles = [];
+  for(let i=0;i<5;i++) obstacles.push({
+    ...randomPos(50),
+    size:15,
+    vx:(Math.random()-0.5)*2,
+    vy:(Math.random()-0.5)*2
+  });
+}
+
+function moveObstacles(){
+  obstacles.forEach(o=>{
+    o.x += o.vx;
+    o.y += o.vy;
+    if(o.x<o.size || o.x>width-o.size) o.vx*=-1;
+    if(o.y<o.size || o.y>height-o.size) o.vy*=-1;
+  });
+}
+
+// --- Inicializar jogo ---
+function initGame(){
+  snake = [{x: width/2, y: height/2}];
+  snakeLength = 5;
+  segmentSize = baseSegmentSize;
+  score = 0;
+  scoreElement.textContent = score;
+  apples = [];
+  spawnApples();
+  spawnObstacles();
+  clearInterval(gameInterval);
+  gameInterval = setInterval(update, 20);
+}
+
+// --- Atualizar ---
+function update(){
+  let head = snake[0];
+
+  // Cabeça segue o mouse suavemente
   let dx = mousePos.x - head.x;
   let dy = mousePos.y - head.y;
-  if (dx !== 0) head.x += Math.sign(dx) * 0.2;
-  if (dy !== 0) head.y += Math.sign(dy) * 0.2;
+  let dist = Math.sqrt(dx*dx + dy*dy);
+  if(dist > snakeSpeed){
+    head.x += dx/dist*snakeSpeed;
+    head.y += dy/dist*snakeSpeed;
+  }
 
-  // Colisão com maçã
-  apples.forEach((apple, i) => {
-    const dist = Math.hypot(apple.x - head.x, apple.y - head.y);
-    const attraction = magnetActive ? 0.2 : 0;
+  // Adiciona segmento
+  snake.unshift({x: head.x, y: head.y});
+  while(snake.length>snakeLength) snake.pop();
 
-    if (magnetActive && dist < 5) {
-      apple.x -= (apple.x - head.x) * attraction;
-      apple.y -= (apple.y - head.y) * attraction;
-    }
+  // Colisão com parede
+  if(head.x<0 || head.x>width || head.y<0 || head.y>height) return gameOver();
 
-    if (dist < 0.5) {
+  // --- Comer maçã ---
+  for(let i=apples.length-1;i>=0;i--){
+    let a = apples[i];
+    if(Math.abs(head.x - a.x)<segmentSize && Math.abs(head.y - a.y)<segmentSize){
+      apples.splice(i,1);
+      snakeLength++;
+      segmentSize += 1.5;
       score++;
       scoreElement.textContent = score;
-      apples[i] = randomPos();
-      snake.push({ ...snake[snake.length - 1] });
     }
-  });
-
-  // Crescimento
-  for (let i = snake.length - 1; i > 0; i--) {
-    snake[i].x += (snake[i - 1].x - snake[i].x) * 0.3;
-    snake[i].y += (snake[i - 1].y - snake[i].y) * 0.3;
   }
+
+  if(apples.length===0){
+    spawnApples();
+    spawnObstacles();
+  }
+
+  // --- Colisão com obstáculos ---
+  moveObstacles();
+  for(let ob of obstacles){
+    if(Math.abs(head.x - ob.x)<segmentSize+ob.size && Math.abs(head.y - ob.y)<segmentSize+ob.size)
+      return gameOver();
+  }
+
+  // --- Colisão consigo mesma ---
+  if(snake.length>5){
+    let ignore = Math.floor(snakeLength/2);
+    for(let i=ignore;i<snake.length;i++){
+      let seg = snake[i];
+      if(Math.abs(head.x - seg.x)<segmentSize && Math.abs(head.y - seg.y)<segmentSize)
+        return gameOver();
+    }
+  }
+
+  draw();
 }
 
-// Desenha tudo
-function draw() {
-  // Fundo xadrez
-  for (let x = 0; x < gridSize; x++) {
-    for (let y = 0; y < gridSize; y++) {
-      ctx.fillStyle = (x + y) % 2 === 0 ? '#111' : '#222';
-      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-    }
-  }
+// --- Desenhar ---
+function draw(){
+  ctx.clearRect(0,0,width,height);
 
   // Obstáculos
-  ctx.fillStyle = '#ff3333';
-  obstacles.forEach(o => {
-    ctx.fillRect(o.x * cellSize, o.y * cellSize, cellSize, cellSize);
+  ctx.fillStyle = "#555";
+  obstacles.forEach(o=>{
+    ctx.fillRect(o.x-o.size, o.y-o.size, o.size*2, o.size*2);
   });
 
   // Maçãs
-  ctx.fillStyle = '#ff0000';
-  apples.forEach(a => {
-    ctx.beginPath();
-    ctx.arc(
-      a.x * cellSize + cellSize / 2,
-      a.y * cellSize + cellSize / 2,
-      cellSize / 3,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
+  ctx.fillStyle = "#FF5555";
+  apples.forEach(a=>{
+    ctx.fillRect(a.x-a.size, a.y-a.size, a.size*2, a.size*2);
   });
 
   // Cobrinha
-  ctx.fillStyle = '#00ff00';
-  snake.forEach((s, i) => {
-    const size = cellSize * (0.9 - i * 0.05);
-    ctx.fillRect(
-      s.x * cellSize + cellSize * 0.05,
-      s.y * cellSize + cellSize * 0.05,
-      size,
-      size
-    );
+  ctx.fillStyle = "#00FF00";
+  snake.forEach(seg=>{
+    ctx.fillRect(seg.x-segmentSize/2, seg.y-segmentSize/2, segmentSize, segmentSize);
   });
 }
 
-function gameLoop() {
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
+// --- Game Over ---
+function gameOver(){
+  clearInterval(gameInterval);
+  alert("Game Over! Pontos: "+score);
+  initGame();
 }
-
-gameLoop();
