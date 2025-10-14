@@ -44,7 +44,10 @@ function randomPos(min = 30) {
   let pos;
   let safe = false;
   while (!safe) {
-    pos = { x: Math.random() * (width - 40) + 20, y: Math.random() * (height - 40) + 20 };
+    pos = {
+      x: Math.random() * (width - 40) + 20,
+      y: Math.random() * (height - 40) + 20
+    };
     let d = Math.hypot(snake[0]?.x - pos.x || 0, snake[0]?.y - pos.y || 0);
     if (d > min) safe = true;
   }
@@ -70,7 +73,6 @@ function spawnObstacles() {
 let obstacleSpeed = 5;
 function moveObstacles() {
   obstacles.forEach(o => {
-    // mover usando velocidade
     o.x += o.vx * obstacleSpeed;
     o.y += o.vy * obstacleSpeed;
 
@@ -93,6 +95,7 @@ function moveObstacles() {
     }
   });
 }
+
 // --- Inicialização ---
 function initGame() {
   snake = [{ x: width / 2, y: height / 2 }];
@@ -101,7 +104,7 @@ function initGame() {
   scoreElement.textContent = score;
   apples = [];
   spawnApples();
-  spawnObstacles();
+  spawnObstacles(); // cria obstáculos só uma vez no início
   clearInterval(gameInterval);
   gameInterval = setInterval(update, 20);
 }
@@ -122,7 +125,7 @@ function update() {
   snake.unshift(head);
   while (snake.length > snakeLength) snake.pop();
 
-  // 🔥 Colisão com parede (corrigido)
+  // 🔥 Colisão com parede
   if (
     head.x - segmentSize / 2 < 0 ||
     head.x + segmentSize / 2 > width ||
@@ -143,29 +146,34 @@ function update() {
     }
   }
 
+  // 🍎 Apenas as maçãs reaparecem
   if (apples.length === 0) {
     spawnApples();
-    spawnObstacles();
   }
 
-  // Colisão com obstáculos
+  // Obstáculos se movem constantemente
   moveObstacles();
+
+  // Colisão com obstáculos
   for (let o of obstacles) {
-  for (let seg of snake) {
-    if (
-      seg.x + segmentSize/2 > o.x - o.size &&
-      seg.x - segmentSize/2 < o.x + o.size &&
-      seg.y + segmentSize/2 > o.y - o.size &&
-      seg.y - segmentSize/2 < o.y + o.size
-    ) {
-      return gameOver();
+    for (let seg of snake) {
+      if (
+        seg.x + segmentSize / 2 > o.x - o.size &&
+        seg.x - segmentSize / 2 < o.x + o.size &&
+        seg.y + segmentSize / 2 > o.y - o.size &&
+        seg.y - segmentSize / 2 < o.y + o.size
+      ) {
+        return gameOver();
+      }
     }
   }
-}
 
   // Colisão consigo mesma
   for (let i = 5; i < snake.length; i++) {
-    if (Math.abs(head.x - snake[i].x) < segmentSize / 2 && Math.abs(head.y - snake[i].y) < segmentSize / 2)
+    if (
+      Math.abs(head.x - snake[i].x) < segmentSize / 2 &&
+      Math.abs(head.y - snake[i].y) < segmentSize / 2
+    )
       return gameOver();
   }
 
@@ -178,9 +186,11 @@ function draw() {
 
   // Obstáculos
   ctx.fillStyle = "#555";
-  obstacles.forEach(o => ctx.fillRect(o.x - o.size, o.y - o.size, o.size * 2, o.size * 2));
+  obstacles.forEach(o =>
+    ctx.fillRect(o.x - o.size, o.y - o.size, o.size * 2, o.size * 2)
+  );
 
-  // Maçãs com efeito visual
+  // Maçãs
   apples.forEach(a => {
     ctx.fillStyle = "#ff4444";
     ctx.shadowColor = "#ff0000";
@@ -191,9 +201,9 @@ function draw() {
     ctx.shadowBlur = 0;
   });
 
-  // Cobrinha quadrada
+  // Cobrinha
   ctx.fillStyle = "#00ff66";
-  snake.forEach((seg) => {
+  snake.forEach(seg => {
     ctx.fillRect(seg.x - segmentSize / 2, seg.y - segmentSize / 2, segmentSize, segmentSize);
   });
 }
