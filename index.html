@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cursor Snake 2D</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursor Snake 2D</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Tela Inicial -->
-<div id="start-screen" class="screen active">
-  <h1>Cursor Snake 2D</h1>
-  <button id="btn-start">Iniciar o Jogo</button>
-</div>
-
-<!-- Tela do Jogo -->
-<div id="game-screen" class="screen">
-  <div class="sidebar">
-    <h2>Pontos: <span id="score">0</span></h2>
-    <button id="btn-restart">Reiniciar</button>
+  <!-- Tela Inicial -->
+  <div id="start-screen" class="screen active">
+    <h1>🐍 Cursor Snake </h1>
+    <button id="btn-start">Iniciar Jogo</button>
   </div>
-  <canvas id="gameCanvas" width="600" height="600"></canvas>
-</div>
 
-<script src="script.js"></script>
+  <!-- Tela do Jogo -->
+  <div id="game-screen" class="screen">
+    <div class="sidebar">
+      <h2>Pontos: <span id="score">0</span></h2>
+      <button id="btn-restart">Reiniciar</button>
+    </div>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
