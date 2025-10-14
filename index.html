@@ -11,6 +11,16 @@
   <!-- Tela Inicial -->
   <div id="start-screen" class="screen active">
      <img src="c:\Users\UAPI-01\Downloads\cursor-snake.png" alt="Logo do Jogo Cursor Snake" class="logo">
+     <h3>Escolha a cor da cobrinha:</h3>
+<div id="color-buttons">
+  <button class="color-btn" data-color="#00ff66" style="background:#00ff66;"></button>
+  <button class="color-btn" data-color="#00ffff" style="background:#00ffff;"></button>
+  <button class="color-btn" data-color="#ff00ff" style="background:#ff00ff;"></button>
+  <button class="color-btn" data-color="#ffff00" style="background:#ffff00;"></button>
+  <button class="color-btn" data-color="#ff4444" style="background:#ff4444;"></button>
+  <button class="color-btn" data-color="#ff8800" style="background:#ff8800;"></button>
+</div>
+
     <button id="btn-start">Iniciar Jogo</button>
   </div>
 
@@ -18,7 +28,9 @@
   <div id="game-screen" class="screen">
     <div class="sidebar">
       <h2>Pontos: <span id="score">0</span></h2>
-      <button id="btn-restart">Reiniciar</button>
+            
+
+
     </div>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
   </div>

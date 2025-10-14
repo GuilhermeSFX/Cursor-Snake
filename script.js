@@ -19,8 +19,19 @@ let apples = [];
 let obstacles = [];
 let score = 0;
 let gameInterval;
-
 const segmentSize = 14;
+
+// --- Cor da cobrinha ---
+let snakeColor = "#00ff66"; // padrão
+const colorButtons = document.querySelectorAll(".color-btn");
+colorButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    snakeColor = btn.getAttribute("data-color");
+    // Destaque visual do botão selecionado
+    colorButtons.forEach(b => b.style.border = "2px solid #fff");
+    btn.style.border = "3px solid #000";
+  });
+});
 
 // --- Iniciar telas ---
 btnStart.addEventListener('click', () => {
@@ -29,9 +40,7 @@ btnStart.addEventListener('click', () => {
   initGame();
 });
 
-btnRestart.addEventListener('click', () => {
-  initGame();
-});
+
 
 // --- Mouse ---
 canvas.addEventListener('mousemove', e => {
@@ -44,10 +53,7 @@ function randomPos(min = 30) {
   let pos;
   let safe = false;
   while (!safe) {
-    pos = {
-      x: Math.random() * (width - 40) + 20,
-      y: Math.random() * (height - 40) + 20
-    };
+    pos = { x: Math.random() * (width - 40) + 20, y: Math.random() * (height - 40) + 20 };
     let d = Math.hypot(snake[0]?.x - pos.x || 0, snake[0]?.y - pos.y || 0);
     if (d > min) safe = true;
   }
@@ -76,23 +82,11 @@ function moveObstacles() {
     o.x += o.vx * obstacleSpeed;
     o.y += o.vy * obstacleSpeed;
 
-    // colisão com as bordas e inverter direção
-    if (o.x < o.size) {
-      o.x = o.size;
-      o.vx *= -1;
-    }
-    if (o.x > width - o.size) {
-      o.x = width - o.size;
-      o.vx *= -1;
-    }
-    if (o.y < o.size) {
-      o.y = o.size;
-      o.vy *= -1;
-    }
-    if (o.y > height - o.size) {
-      o.y = height - o.size;
-      o.vy *= -1;
-    }
+    // colisão com bordas
+    if (o.x < o.size) { o.x = o.size; o.vx *= -1; }
+    if (o.x > width - o.size) { o.x = width - o.size; o.vx *= -1; }
+    if (o.y < o.size) { o.y = o.size; o.vy *= -1; }
+    if (o.y > height - o.size) { o.y = height - o.size; o.vy *= -1; }
   });
 }
 
@@ -104,7 +98,7 @@ function initGame() {
   scoreElement.textContent = score;
   apples = [];
   spawnApples();
-  spawnObstacles(); // cria obstáculos só uma vez no início
+  spawnObstacles(); // obstáculos iniciam já em movimento
   clearInterval(gameInterval);
   gameInterval = setInterval(update, 20);
 }
@@ -125,13 +119,9 @@ function update() {
   snake.unshift(head);
   while (snake.length > snakeLength) snake.pop();
 
-  // 🔥 Colisão com parede
-  if (
-    head.x - segmentSize / 2 < 0 ||
-    head.x + segmentSize / 2 > width ||
-    head.y - segmentSize / 2 < 0 ||
-    head.y + segmentSize / 2 > height
-  ) {
+  // Colisão com parede
+  if (head.x - segmentSize / 2 < 0 || head.x + segmentSize / 2 > width ||
+      head.y - segmentSize / 2 < 0 || head.y + segmentSize / 2 > height) {
     return gameOver();
   }
 
@@ -146,23 +136,19 @@ function update() {
     }
   }
 
-  // 🍎 Apenas as maçãs reaparecem
-  if (apples.length === 0) {
-    spawnApples();
-  }
+  // Reaparecer maçãs
+  if (apples.length === 0) spawnApples();
 
-  // Obstáculos se movem constantemente
+  // Obstáculos em movimento constante
   moveObstacles();
 
   // Colisão com obstáculos
   for (let o of obstacles) {
     for (let seg of snake) {
-      if (
-        seg.x + segmentSize / 2 > o.x - o.size &&
-        seg.x - segmentSize / 2 < o.x + o.size &&
-        seg.y + segmentSize / 2 > o.y - o.size &&
-        seg.y - segmentSize / 2 < o.y + o.size
-      ) {
+      if (seg.x + segmentSize/2 > o.x - o.size &&
+          seg.x - segmentSize/2 < o.x + o.size &&
+          seg.y + segmentSize/2 > o.y - o.size &&
+          seg.y - segmentSize/2 < o.y + o.size) {
         return gameOver();
       }
     }
@@ -170,11 +156,10 @@ function update() {
 
   // Colisão consigo mesma
   for (let i = 5; i < snake.length; i++) {
-    if (
-      Math.abs(head.x - snake[i].x) < segmentSize / 2 &&
-      Math.abs(head.y - snake[i].y) < segmentSize / 2
-    )
+    if (Math.abs(head.x - snake[i].x) < segmentSize / 2 &&
+        Math.abs(head.y - snake[i].y) < segmentSize / 2) {
       return gameOver();
+    }
   }
 
   draw();
@@ -186,9 +171,7 @@ function draw() {
 
   // Obstáculos
   ctx.fillStyle = "#555";
-  obstacles.forEach(o =>
-    ctx.fillRect(o.x - o.size, o.y - o.size, o.size * 2, o.size * 2)
-  );
+  obstacles.forEach(o => ctx.fillRect(o.x - o.size, o.y - o.size, o.size * 2, o.size * 2));
 
   // Maçãs
   apples.forEach(a => {
@@ -201,11 +184,9 @@ function draw() {
     ctx.shadowBlur = 0;
   });
 
-  // Cobrinha
-  ctx.fillStyle = "#00ff66";
-  snake.forEach(seg => {
-    ctx.fillRect(seg.x - segmentSize / 2, seg.y - segmentSize / 2, segmentSize, segmentSize);
-  });
+  // Cobrinha com cor selecionada
+  ctx.fillStyle = snakeColor;
+  snake.forEach(seg => ctx.fillRect(seg.x - segmentSize / 2, seg.y - segmentSize / 2, segmentSize, segmentSize));
 }
 
 // --- Game Over ---
