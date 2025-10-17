@@ -10,6 +10,9 @@ const ctx = canvas.getContext('2d');
 const width = canvas.width;
 const height = canvas.height;
 
+const gameOverDiv = document.getElementById("game-over");
+const finalScore = document.getElementById("final-score");
+const btnRestartOver = document.getElementById("btn-restart-over");
 // --- Variáveis do jogo ---
 let snake = [];
 let snakeLength = 5;
@@ -189,9 +192,17 @@ function draw() {
   snake.forEach(seg => ctx.fillRect(seg.x - segmentSize / 2, seg.y - segmentSize / 2, segmentSize, segmentSize));
 }
 
-// --- Game Over ---
+
+
+
+
+btnRestartOver.addEventListener("click", () => {
+  gameOverDiv.classList.add("hidden");
+  initGame();
+});
+
 function gameOver() {
   clearInterval(gameInterval);
-  alert(`💀 Acabou pra VC! Pontos: ${score}`);
-  initGame();
+  finalScore.textContent = score;
+  gameOverDiv.classList.remove("hidden");
 }
