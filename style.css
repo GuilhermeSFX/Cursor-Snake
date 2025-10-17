@@ -131,3 +131,33 @@ body, html {
 #game-over button:hover {
   background-color: #00cc55;
 }
+/* Overlay: fundo opaco escuro */
+#game-over-overlay {
+  position: fixed;  /* fixa na tela toda */
+  top: 0;
+  left: 0;
+  width: 100vw;     /* 100% da largura da viewport */
+  height: 100vh;    /* 100% da altura da viewport */
+  background-color: rgba(0, 0, 0, 0.7); /* fundo preto opaco */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;    /* fica por cima de tudo */
+}
+
+/* Esconde o overlay quando necessário */
+#game-over-overlay.hidden {
+  display: none;
+}
+
+/* Caixa de game-over */
+#game-over {
+  background-color: #111;
+  border: 4px solid #00ff66;
+  border-radius: 10px;
+  padding: 40px 60px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 0 20px #00ff66;
+  max-width: 320px;
+}

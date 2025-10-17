@@ -34,12 +34,16 @@
     </div>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
   </div>
+  <audio id="sound-eat" src="Minecraft-Eating-Sound-Effect-_HD_.mp3" preload="auto"></audio>
 
   
-<div id="game-over" class="hidden">
-  <h2>💀 Game Over!</h2>
-  <p>Pontos: <span id="final-score">0</span></p>
-  <button id="btn-restart-over">Reiniciar</button>
+<!-- Camada escurecida (overlay) para o game over -->
+<div id="game-over-overlay" class="hidden">
+  <div id="game-over">
+    <h2>💀 Game Over!</h2>
+    <p>Pontos: <span id="final-score">0</span></p>
+    <button id="btn-restart-over">Reiniciar</button>
+  </div>
 </div>
 
 </div>
