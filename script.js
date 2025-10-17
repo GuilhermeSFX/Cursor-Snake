@@ -2,9 +2,8 @@
 const startScreen = document.getElementById('start-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnStart = document.getElementById('btn-start');
-const btnRestart = document.getElementById('btn-restart');
 const scoreElement = document.getElementById('score');
-const soundEat = document.getElementById('sound-eat'); // som do Pou comendo
+const soundEat = document.getElementById('sound-eat');
 const soundGameOver = document.getElementById('sound-gameover');
 
 const canvas = document.getElementById('gameCanvas');
@@ -28,7 +27,7 @@ let gameInterval;
 const segmentSize = 14;
 
 // --- Cor da cobrinha ---
-let snakeColor = "#00ff66"; // padrão
+let snakeColor = "#00ff66";
 const colorButtons = document.querySelectorAll(".color-btn");
 colorButtons.forEach(btn => {
   btn.addEventListener("click", () => {
@@ -38,25 +37,39 @@ colorButtons.forEach(btn => {
   });
 });
 
-// --- Iniciar telas ---
+// --- Skin da cabeça ---
+let headSkin = new Image();
+headSkin.src = "img/pou.png"; // padrão
+const skinOptions = document.querySelectorAll(".skin-option");
+
+skinOptions.forEach(option => {
+  option.addEventListener("click", () => {
+    skinOptions.forEach(o => o.classList.remove("selected"));
+    option.classList.add("selected");
+    headSkin.src = option.dataset.src;
+  });
+});
+
+// --- Iniciar jogo ---
 btnStart.addEventListener('click', () => {
   startScreen.classList.remove('active');
   gameScreen.classList.add('active');
   initGame();
 });
 
-// --- Mouse ---
 canvas.addEventListener('mousemove', e => {
   const rect = canvas.getBoundingClientRect();
   mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
 });
 
-// --- Funções de posicionamento ---
 function randomPos(min = 30) {
   let pos;
   let safe = false;
   while (!safe) {
-    pos = { x: Math.random() * (width - 40) + 20, y: Math.random() * (height - 40) + 20 };
+    pos = {
+      x: Math.random() * (width - 40) + 20,
+      y: Math.random() * (height - 40) + 20
+    };
     let d = Math.hypot(snake[0]?.x - pos.x || 0, snake[0]?.y - pos.y || 0);
     if (d > min) safe = true;
   }
@@ -85,15 +98,11 @@ function moveObstacles() {
     o.x += o.vx * obstacleSpeed;
     o.y += o.vy * obstacleSpeed;
 
-    // colisão com bordas
-    if (o.x < o.size) { o.x = o.size; o.vx *= -1; }
-    if (o.x > width - o.size) { o.x = width - o.size; o.vx *= -1; }
-    if (o.y < o.size) { o.y = o.size; o.vy *= -1; }
-    if (o.y > height - o.size) { o.y = height - o.size; o.vy *= -1; }
+    if (o.x < o.size || o.x > width - o.size) o.vx *= -1;
+    if (o.y < o.size || o.y > height - o.size) o.vy *= -1;
   });
 }
 
-// --- Inicialização ---
 function initGame() {
   snake = [{ x: width / 2, y: height / 2 }];
   snakeLength = 5;
@@ -106,14 +115,12 @@ function initGame() {
   gameInterval = setInterval(update, 20);
 }
 
-// --- Atualização do jogo ---
 function update() {
   let head = { ...snake[0] };
-
-  // Movimento em direção ao mouse
   let dx = mousePos.x - head.x;
   let dy = mousePos.y - head.y;
   let dist = Math.sqrt(dx * dx + dy * dy);
+
   if (dist > 1) {
     head.x += (dx / dist) * snakeSpeed;
     head.y += (dy / dist) * snakeSpeed;
@@ -122,11 +129,8 @@ function update() {
   snake.unshift(head);
   while (snake.length > snakeLength) snake.pop();
 
-  // Colisão com parede
-  if (head.x - segmentSize / 2 < 0 || head.x + segmentSize / 2 > width ||
-      head.y - segmentSize / 2 < 0 || head.y + segmentSize / 2 > height) {
-    return gameOver();
-  }
+  // Parede
+  if (head.x < 0 || head.x > width || head.y < 0 || head.y > height) return gameOver();
 
   // Comer maçã
   for (let i = apples.length - 1; i >= 0; i--) {
@@ -136,20 +140,15 @@ function update() {
       snakeLength += 2;
       score++;
       scoreElement.textContent = score;
-
-      // Tocar som do Pou comendo
       soundEat.currentTime = 0;
       soundEat.play();
     }
   }
 
-  // Reaparecer maçãs
   if (apples.length === 0) spawnApples();
-
-  // Obstáculos em movimento constante
   moveObstacles();
 
-  // Colisão com obstáculos
+  // Obstáculos
   for (let o of obstacles) {
     for (let seg of snake) {
       if (seg.x + segmentSize / 2 > o.x - o.size &&
@@ -161,7 +160,7 @@ function update() {
     }
   }
 
-  // Colisão consigo mesma
+  // Colisão com o próprio corpo
   for (let i = 5; i < snake.length; i++) {
     if (Math.abs(head.x - snake[i].x) < segmentSize / 2 &&
         Math.abs(head.y - snake[i].y) < segmentSize / 2) {
@@ -172,7 +171,6 @@ function update() {
   draw();
 }
 
-// --- Desenho ---
 function draw() {
   ctx.clearRect(0, 0, width, height);
 
@@ -191,22 +189,46 @@ function draw() {
   });
   ctx.shadowBlur = 0;
 
-  // Cobrinha com cor selecionada
-  ctx.fillStyle = snakeColor;
-  snake.forEach(seg => ctx.fillRect(seg.x - segmentSize / 2, seg.y - segmentSize / 2, segmentSize, segmentSize));
+  // Cobrinha
+  snake.forEach((seg, index) => {
+    if (index === 0) {
+      // Cabeça com imagem
+      if (headSkin.complete && headSkin.naturalWidth > 0) {
+        ctx.drawImage(
+          headSkin,
+          seg.x - segmentSize / 2,
+          seg.y - segmentSize / 2,
+          segmentSize,
+          segmentSize
+        );
+      } else {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(seg.x, seg.y, segmentSize / 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      ctx.fillStyle = snakeColor;
+      ctx.fillRect(
+        seg.x - segmentSize / 2,
+        seg.y - segmentSize / 2,
+        segmentSize,
+        segmentSize
+      );
+    }
+  });
 }
-
-btnRestartOver.addEventListener("click", () => {
-  gameOverOverlay.classList.add("hidden");
-  initGame();
-});
 
 function gameOver() {
   clearInterval(gameInterval);
   finalScore.textContent = score;
   gameOverOverlay.classList.remove("hidden");
 
-   // Tocar som de Game Over
   soundGameOver.currentTime = 0;
   soundGameOver.play();
 }
+
+btnRestartOver.addEventListener("click", () => {
+  gameOverOverlay.classList.add("hidden");
+  initGame();
+});
