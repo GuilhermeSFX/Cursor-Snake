@@ -5,6 +5,7 @@ const btnStart = document.getElementById('btn-start');
 const btnRestart = document.getElementById('btn-restart');
 const scoreElement = document.getElementById('score');
 const soundEat = document.getElementById('sound-eat'); // som do Pou comendo
+const soundGameOver = document.getElementById('sound-gameover');
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -204,4 +205,8 @@ function gameOver() {
   clearInterval(gameInterval);
   finalScore.textContent = score;
   gameOverOverlay.classList.remove("hidden");
+
+   // Tocar som de Game Over
+  soundGameOver.currentTime = 0;
+  soundGameOver.play();
 }
