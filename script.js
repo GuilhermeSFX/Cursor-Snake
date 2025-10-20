@@ -92,7 +92,7 @@ function spawnObstacles() {
   }
 }
 
-let obstacleSpeed = 4;
+let obstacleSpeed = 10;
 function moveObstacles() {
   obstacles.forEach(o => {
     o.x += o.vx * obstacleSpeed;
