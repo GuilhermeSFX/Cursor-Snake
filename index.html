@@ -10,16 +10,25 @@
 
   <!-- Tela Inicial -->
   <div id="start-screen" class="screen active">
-     <img src="c:\Users\UAPI-01\Downloads\cursor-snake.png" alt="Logo do Jogo Cursor Snake" class="logo">
-     <h3>Escolha a cor da cobrinha:</h3>
-<div id="color-buttons">
-  <button class="color-btn" data-color="#00ff66" style="background:#00ff66;"></button>
-  <button class="color-btn" data-color="#00ffff" style="background:#00ffff;"></button>
-  <button class="color-btn" data-color="#ff00ff" style="background:#ff00ff;"></button>
-  <button class="color-btn" data-color="#ffff00" style="background:#ffff00;"></button>
-  <button class="color-btn" data-color="#ff4444" style="background:#ff4444;"></button>
-  <button class="color-btn" data-color="#ff8800" style="background:#ff8800;"></button>
-</div>
+    <img src="logo.png" alt="Logo do Jogo Cursor Snake" class="logo">
+
+    <h3>Escolha a cor da cobrinha:</h3>
+    <div id="color-buttons">
+      <button class="color-btn" data-color="#00ff66" style="background:#00ff66;"></button>
+      <button class="color-btn" data-color="#00ffff" style="background:#00ffff;"></button>
+      <button class="color-btn" data-color="#ff00ff" style="background:#ff00ff;"></button>
+      <button class="color-btn" data-color="#ffff00" style="background:#ffff00;"></button>
+      <button class="color-btn" data-color="#ff4444" style="background:#ff4444;"></button>
+      <button class="color-btn" data-color="#ff8800" style="background:#ff8800;"></button>
+    </div>
+
+   <h3>Escolha a skin da cabeça:</h3>
+  <div id="skin-buttons">
+    <img class="skin-option selected" data-src="lingua.png" src="lingua.png" width="40" height="40">
+    <img class="skin-option" data-src="pou.png" src="pou.png" width="40" height="40">
+    <img class="skin-option" data-src="foto.png" src="foto.png" width="40" height="40">
+  </div>
+
 
     <button id="btn-start">Iniciar Jogo</button>
   </div>
@@ -28,25 +37,21 @@
   <div id="game-screen" class="screen">
     <div class="sidebar">
       <h2>Pontos: <span id="score">0</span></h2>
-            
-
-
     </div>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
   </div>
+
   <audio id="sound-eat" src="Minecraft-Eating-Sound-Effect-_HD_.mp3" preload="auto"></audio>
   <audio id="sound-gameover" src="Super-Mario-Game-over-Sound-Effect-_shorts-_supermario-_entertainment.mp3" preload="auto"></audio>
-  
-<!-- Camada escurecida (overlay) para o game over -->
-<div id="game-over-overlay" class="hidden">
-  <div id="game-over">
-    <h2>💀 Game Over!</h2>
-    <p>Pontos: <span id="final-score">0</span></p>
-    <button id="btn-restart-over">Reiniciar</button>
-  </div>
-</div>
 
-</div>
-<script src="script.js"></script>
+  <div id="game-over-overlay" class="hidden">
+    <div id="game-over">
+      <h2>💀 Game Over!</h2>
+      <p>Pontos: <span id="final-score">0</span></p>
+      <button id="btn-restart-over">Reiniciar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

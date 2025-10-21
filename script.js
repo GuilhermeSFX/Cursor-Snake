@@ -39,7 +39,7 @@ colorButtons.forEach(btn => {
 
 // --- Skin da cabeça ---
 let headSkin = new Image();
-headSkin.src = "img/pou.png"; // padrão
+headSkin.src = "pou.jpg"; // imagem padrão
 const skinOptions = document.querySelectorAll(".skin-option");
 
 skinOptions.forEach(option => {
@@ -57,11 +57,13 @@ btnStart.addEventListener('click', () => {
   initGame();
 });
 
+// --- Movimento do mouse ---
 canvas.addEventListener('mousemove', e => {
   const rect = canvas.getBoundingClientRect();
   mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
 });
 
+// --- Gerar posição aleatória ---
 function randomPos(min = 30) {
   let pos;
   let safe = false;
@@ -76,10 +78,12 @@ function randomPos(min = 30) {
   return pos;
 }
 
+// --- Maçãs ---
 function spawnApples() {
   while (apples.length < 3) apples.push({ ...randomPos(), size: 10 });
 }
 
+// --- Obstáculos ---
 function spawnObstacles() {
   obstacles = [];
   for (let i = 0; i < 5; i++) {
@@ -92,7 +96,7 @@ function spawnObstacles() {
   }
 }
 
-let obstacleSpeed = 10;
+let obstacleSpeed = 5;
 function moveObstacles() {
   obstacles.forEach(o => {
     o.x += o.vx * obstacleSpeed;
@@ -103,6 +107,7 @@ function moveObstacles() {
   });
 }
 
+// --- Inicialização ---
 function initGame() {
   snake = [{ x: width / 2, y: height / 2 }];
   snakeLength = 5;
@@ -113,8 +118,10 @@ function initGame() {
   spawnObstacles();
   clearInterval(gameInterval);
   gameInterval = setInterval(update, 20);
+  gameOverOverlay.classList.add("hidden");
 }
 
+// --- Atualizar ---
 function update() {
   let head = { ...snake[0] };
   let dx = mousePos.x - head.x;
@@ -129,7 +136,7 @@ function update() {
   snake.unshift(head);
   while (snake.length > snakeLength) snake.pop();
 
-  // Parede
+  // Colisão com parede
   if (head.x < 0 || head.x > width || head.y < 0 || head.y > height) return gameOver();
 
   // Comer maçã
@@ -148,7 +155,7 @@ function update() {
   if (apples.length === 0) spawnApples();
   moveObstacles();
 
-  // Obstáculos
+  // Colisão com obstáculos
   for (let o of obstacles) {
     for (let seg of snake) {
       if (seg.x + segmentSize / 2 > o.x - o.size &&
@@ -171,6 +178,7 @@ function update() {
   draw();
 }
 
+// --- Desenhar ---
 function draw() {
   ctx.clearRect(0, 0, width, height);
 
@@ -189,45 +197,45 @@ function draw() {
   });
   ctx.shadowBlur = 0;
 
-  // Cobrinha
-  snake.forEach((seg, index) => {
-    if (index === 0) {
-      // Cabeça com imagem
-      if (headSkin.complete && headSkin.naturalWidth > 0) {
-        ctx.drawImage(
-          headSkin,
-          seg.x - segmentSize / 2,
-          seg.y - segmentSize / 2,
-          segmentSize,
-          segmentSize
-        );
-      } else {
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(seg.x, seg.y, segmentSize / 1.8, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else {
-      ctx.fillStyle = snakeColor;
-      ctx.fillRect(
-        seg.x - segmentSize / 2,
-        seg.y - segmentSize / 2,
-        segmentSize,
-        segmentSize
-      );
-    }
-  });
+  // Corpo da cobra (atrás)
+  for (let i = 1; i < snake.length; i++) {
+    const seg = snake[i];
+    ctx.fillStyle = snakeColor;
+    ctx.fillRect(
+      seg.x - segmentSize / 2,
+      seg.y - segmentSize / 2,
+      segmentSize,
+      segmentSize
+    );
+  }
+
+  // Cabeça da cobra (por cima e centralizada)
+  const head = snake[0];
+  const headSize = segmentSize * 4; // cabeça maior
+  const offsetX = head.x - headSize / 2;
+  const offsetY = head.y - headSize / 2;
+
+  if (headSkin.complete && headSkin.naturalWidth > 0) {
+    ctx.drawImage(headSkin, offsetX, offsetY, headSize, headSize);
+  } else {
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, headSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
+// --- Game Over ---
 function gameOver() {
   clearInterval(gameInterval);
   finalScore.textContent = score;
   gameOverOverlay.classList.remove("hidden");
-
+  gameOverOverlay.style.background = "rgba(0, 0, 0, 0.7)";
   soundGameOver.currentTime = 0;
   soundGameOver.play();
 }
 
+// --- Reiniciar ---
 btnRestartOver.addEventListener("click", () => {
   gameOverOverlay.classList.add("hidden");
   initGame();
