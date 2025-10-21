@@ -96,7 +96,7 @@ function spawnObstacles() {
   }
 }
 
-let obstacleSpeed = 5;
+let obstacleSpeed = 4;
 function moveObstacles() {
   obstacles.forEach(o => {
     o.x += o.vx * obstacleSpeed;
@@ -218,7 +218,7 @@ function draw() {
   if (headSkin.complete && headSkin.naturalWidth > 0) {
     ctx.drawImage(headSkin, offsetX, offsetY, headSize, headSize);
   } else {
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#030101ff";
     ctx.beginPath();
     ctx.arc(head.x, head.y, headSize / 2, 0, Math.PI * 2);
     ctx.fill();
