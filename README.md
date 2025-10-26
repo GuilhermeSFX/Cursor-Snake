@@ -8,7 +8,15 @@ A cobrinha se move de forma suave, seguindo a posição do cursor e deixando um 
 ## 🧠 Tecnologias utilizadas
 - HTML5  
 - CSS3  
-- JavaScript (DOM e animações com `requestAnimationFrame`)
+- JavaScript
+
+## 📖 Regras
+Não encoste nas paredes
+Não encoste o Mouse na Cobrinha
+Não bata nos obstáculos
+Deve comer três maçãs para aparecer outras três
+A cobrinha não pode bater nela mesma
+A cobrinha só segue o mouse se ele estiver no campo
 
 ## 🚀 Como executar
 1. Baixe ou clone este repositório:
