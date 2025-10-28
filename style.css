@@ -158,10 +158,11 @@ body, html {
 }
 
 .skin-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   border: 2px solid #fff;
-  border-radius: 8px;
   cursor: pointer;
-  margin-right: 5px;
   transition: transform 0.2s, border 0.2s;
 }
 
